@@ -1,0 +1,30 @@
+repo:
+  url: https://gitlab.com/group/subgroup/repo.git
+  base_branch: main
+
+provider:
+  type: gitlab
+  repo: group/subgroup/repo
+  token_env: GITLAB_TOKEN
+  host: https://gitlab.com
+
+scan:
+  ecosystems: []
+  auto_detect: true
+  include_vulnerabilities: true
+
+update:
+  enabled: true
+  max_updates: 50
+
+automation:
+  branch_name: depdetective/autoupdate
+  pr_title: "chore(deps): automated dependency updates"
+  labels: ["dependencies", "security"]
+  dry_run: false
+
+hooks:
+  before_scan: []
+  after_scan: []
+  before_update: []
+  after_update: []

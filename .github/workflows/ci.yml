@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+      - name: Lint
+        run: ruff check .
+      - name: Tests
+        run: pytest
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+      - name: Integration Tests
+        run: pytest -q tests/test_runner_integration.py tests/test_provider_azure_devops_api.py
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t depdetective:ci .
+      - name: Smoke test CLI
+        run: |
+          docker run --rm depdetective:ci --help
+          docker run --rm depdetective:ci run \
+            --repo-url https://github.com/octocat/Hello-World.git \
+            --provider github \
+            --auto-detect \
+            --dry-run

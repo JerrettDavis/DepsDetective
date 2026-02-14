@@ -1,0 +1,14 @@
+stages:
+  - deps
+
+depdetective:
+  stage: deps
+  image: ghcr.io/your-org/depdetective:latest
+  script:
+    - depdetective run --config examples/configs/gitlab.yml
+  variables:
+    GITLAB_TOKEN: $GITLAB_TOKEN
+  only:
+    - schedules
+    - web
+

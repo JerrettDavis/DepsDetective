@@ -1,0 +1,29 @@
+repo:
+  url: https://github.com/OWNER/REPO.git
+  base_branch: main
+
+provider:
+  type: github
+  repo: OWNER/REPO
+  token_env: GITHUB_TOKEN
+
+scan:
+  ecosystems: []
+  auto_detect: true
+  include_vulnerabilities: true
+
+update:
+  enabled: true
+  max_updates: 50
+
+automation:
+  branch_name: depdetective/autoupdate
+  pr_title: "chore(deps): automated dependency updates"
+  labels: ["dependencies", "security"]
+  dry_run: false
+
+hooks:
+  before_scan: []
+  after_scan: []
+  before_update: []
+  after_update: []

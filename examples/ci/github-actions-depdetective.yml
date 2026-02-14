@@ -1,0 +1,23 @@
+name: DepDetective
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 1"
+
+jobs:
+  depdetective:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: read
+    steps:
+      - name: Run DepDetective
+        run: |
+          docker run --rm \
+            -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            -v ${{ github.workspace }}/examples/configs:/configs \
+            ghcr.io/your-org/depdetective:latest \
+            run --config /configs/github.yml
+

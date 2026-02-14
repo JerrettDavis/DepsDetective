@@ -1,0 +1,22 @@
+trigger:
+  tags:
+    include:
+      - "v*"
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  imageName: depdetective
+
+steps:
+  - task: Docker@2
+    displayName: Build and push image
+    inputs:
+      containerRegistry: your-acr-service-connection
+      repository: $(imageName)
+      command: buildAndPush
+      Dockerfile: Dockerfile
+      tags: |
+        $(Build.SourceBranchName)
+

@@ -1,0 +1,28 @@
+trigger: none
+pr: none
+
+schedules:
+  - cron: "0 5 * * 1"
+    displayName: Weekly dependency scan
+    branches:
+      include:
+        - main
+    always: true
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: Bash@3
+    displayName: Run DepDetective
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: inline
+      script: |
+        docker run --rm \
+          -e SYSTEM_ACCESSTOKEN="$(System.AccessToken)" \
+          -v "$(Build.SourcesDirectory)/examples/configs:/configs" \
+          ghcr.io/your-org/depdetective:latest \
+          run --config /configs/azure-devops.yml
+

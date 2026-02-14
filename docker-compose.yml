@@ -1,0 +1,13 @@
+services:
+  depdetective:
+    build: .
+    image: ghcr.io/local/depdetective:dev
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITLAB_TOKEN: ${GITLAB_TOKEN:-}
+    command: >
+      run
+      --config /workspace/depdetective.yml
+    volumes:
+      - ./:/workspace
+

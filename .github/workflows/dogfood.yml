@@ -1,0 +1,81 @@
+name: Dogfood DepDetective
+
+on:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run in dry-run mode (no push, no PR API calls)"
+        required: false
+        default: true
+        type: boolean
+
+concurrency:
+  group: dogfood-depdetective
+  cancel-in-progress: false
+
+jobs:
+  dry-run:
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dry_run)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Run DepDetective (dry-run)
+        run: |
+          depdetective run \
+            --repo-url https://github.com/${{ github.repository }}.git \
+            --provider github \
+            --provider-repo ${{ github.repository }} \
+            --auto-detect \
+            --dry-run \
+            --report-path depdetective-report.json
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: depdetective-report-dry-run
+          path: depdetective-report.json
+
+  autonomous:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Run DepDetective (autonomous)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          depdetective run \
+            --repo-url https://github.com/${{ github.repository }}.git \
+            --provider github \
+            --provider-repo ${{ github.repository }} \
+            --auto-detect \
+            --report-path depdetective-report.json
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: depdetective-report-autonomous
+          path: depdetective-report.json
+
