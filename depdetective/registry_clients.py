@@ -34,6 +34,25 @@ def latest_npm_version(package: str, timeout: int = 20) -> str | None:
         return None
 
 
+def latest_nuget_version(package: str, timeout: int = 20) -> str | None:
+    package_id = package.lower()
+    url = f"https://api.nuget.org/v3-flatcontainer/{quote(package_id)}/index.json"
+    try:
+        response = requests.get(url, timeout=timeout)
+        if response.status_code != 200:
+            return None
+        payload = response.json()
+        versions = payload.get("versions", [])
+        if not isinstance(versions, list) or not versions:
+            return None
+        stable_versions = [str(version) for version in versions if "-" not in str(version)]
+        candidates = stable_versions or [str(version) for version in versions]
+        return candidates[-1] if candidates else None
+    except requests.RequestException:
+        LOGGER.warning("Failed to query NuGet for %s", package)
+        return None
+
+
 def osv_query(package: str, ecosystem: str, version: str, timeout: int = 20) -> list[dict]:
     payload = {
         "package": {"name": package, "ecosystem": ecosystem},
@@ -47,4 +66,3 @@ def osv_query(package: str, ecosystem: str, version: str, timeout: int = 20) -> 
     except requests.RequestException:
         LOGGER.warning("Failed to query OSV for %s@%s", package, version)
         return []
-

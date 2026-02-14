@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added first-class .NET/NuGet support:
+  - Scanner support for `*.csproj`, `*.fsproj`, `*.vbproj`, `*.props`, `*.targets`, `Directory.Packages.props`, and `packages.config`.
+  - Updater support for literal NuGet versions in the same manifest types.
+  - NuGet latest-version lookup and OSV vulnerability ecosystem mapping (`NuGet`).
+- Added integration coverage for end-to-end .NET update workflow and unit tests for .NET scanner/updater behavior.
+
 ## 0.1.0 - 2026-02-14
 
 Initial public release candidate.
@@ -19,4 +27,3 @@ Initial public release candidate.
 - Dry-run mode for no-mutation validation.
 - Docker packaging and CI/CD templates for GitHub, GitLab, Azure DevOps.
 - Dogfooding workflow to run DepDetective on this project itself.
-

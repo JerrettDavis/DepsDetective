@@ -206,3 +206,44 @@ def test_run_bot_dry_run_triggers_workflow_but_does_not_push_or_call_provider(
     assert report.pr_workflow_triggered is True
     assert fake_provider.called is False
     assert _remote_branch_exists(remote, "depdetective/autoupdate") is False
+
+
+def test_run_bot_autodetects_dotnet_and_updates_csproj(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    remote, work = _init_bare_remote(tmp_path)
+    (work / "App.csproj").write_text(
+        """
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+</Project>
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    _push_main(work, remote)
+
+    fake_provider = _FakeProvider()
+    monkeypatch.setattr("depdetective.runner.build_provider", lambda *args, **kwargs: fake_provider)
+    monkeypatch.setattr(
+        "depdetective.scanners.dotnet_nuget.latest_nuget_version",
+        lambda _name: "13.0.3",
+    )
+
+    config = DepDetectiveConfig(
+        repo=RepoConfig(url=str(remote), base_branch="main"),
+        provider=ProviderConfig(type="github", repo="example/repo"),
+        scan=ScanConfig(ecosystems=[], auto_detect=True, include_vulnerabilities=False),
+        update=UpdateConfig(enabled=True, max_updates=10),
+        automation=AutomationConfig(branch_name="depdetective/autoupdate"),
+        hooks=HookConfig(),
+    )
+    report = run_bot(config)
+
+    assert len(report.updates_applied) == 1
+    assert fake_provider.called is True
+    updated = _remote_show_file(remote, "depdetective/autoupdate", "App.csproj")
+    assert 'Version="13.0.3"' in updated

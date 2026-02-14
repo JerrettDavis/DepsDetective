@@ -6,6 +6,7 @@ from depdetective.registry_clients import osv_query
 ECOSYSTEM_MAP = {
     "python": "PyPI",
     "node": "npm",
+    "dotnet": "NuGet",
 }
 
 
@@ -43,4 +44,3 @@ def _extract_severity(vuln: dict) -> str | None:
     if isinstance(first, dict):
         return first.get("score")
     return str(first)
-
