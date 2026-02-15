@@ -172,6 +172,10 @@ This repository dogfoods DepDetective on itself via `.github/workflows/dogfood.y
 - `pull_request`: dry-run verification (no push, no PR API calls)
 - `schedule`: autonomous mode (pushes bot branch, opens/updates PR)
 
+CI also validates detection/update behavior per ecosystem using a matrix in `.github/workflows/ci.yml`:
+
+- `python`, `node`, `dotnet`, `go`, `maven`, `rust`
+
 ## Current limitations
 
 - Python updates currently target `requirements*.txt` pinned specs (`==`) and compatible `pyproject.toml` sections.
