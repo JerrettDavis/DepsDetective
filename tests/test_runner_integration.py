@@ -247,3 +247,131 @@ def test_run_bot_autodetects_dotnet_and_updates_csproj(
     assert fake_provider.called is True
     updated = _remote_show_file(remote, "depdetective/autoupdate", "App.csproj")
     assert 'Version="13.0.3"' in updated
+
+
+def test_run_bot_autodetects_go_and_updates_go_mod(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    remote, work = _init_bare_remote(tmp_path)
+    (work / "go.mod").write_text(
+        """
+module example.com/app
+
+go 1.22
+
+require github.com/pkg/errors v0.8.1
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    _push_main(work, remote)
+
+    fake_provider = _FakeProvider()
+    monkeypatch.setattr("depdetective.runner.build_provider", lambda *args, **kwargs: fake_provider)
+    monkeypatch.setattr(
+        "depdetective.scanners.go_mod.latest_go_version",
+        lambda _name: "v0.9.1",
+    )
+
+    config = DepDetectiveConfig(
+        repo=RepoConfig(url=str(remote), base_branch="main"),
+        provider=ProviderConfig(type="github", repo="example/repo"),
+        scan=ScanConfig(ecosystems=[], auto_detect=True, include_vulnerabilities=False),
+        update=UpdateConfig(enabled=True, max_updates=10),
+        automation=AutomationConfig(branch_name="depdetective/autoupdate"),
+        hooks=HookConfig(),
+    )
+    report = run_bot(config)
+
+    assert len(report.updates_applied) == 1
+    assert fake_provider.called is True
+    updated = _remote_show_file(remote, "depdetective/autoupdate", "go.mod")
+    assert "github.com/pkg/errors v0.9.1" in updated
+
+
+def test_run_bot_autodetects_maven_and_updates_pom(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    remote, work = _init_bare_remote(tmp_path)
+    (work / "pom.xml").write_text(
+        """
+<project>
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.12</version>
+    </dependency>
+  </dependencies>
+</project>
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    _push_main(work, remote)
+
+    fake_provider = _FakeProvider()
+    monkeypatch.setattr("depdetective.runner.build_provider", lambda *args, **kwargs: fake_provider)
+    monkeypatch.setattr(
+        "depdetective.scanners.maven_pom.latest_maven_version",
+        lambda _g, _a: "2.0.13",
+    )
+
+    config = DepDetectiveConfig(
+        repo=RepoConfig(url=str(remote), base_branch="main"),
+        provider=ProviderConfig(type="github", repo="example/repo"),
+        scan=ScanConfig(ecosystems=[], auto_detect=True, include_vulnerabilities=False),
+        update=UpdateConfig(enabled=True, max_updates=10),
+        automation=AutomationConfig(branch_name="depdetective/autoupdate"),
+        hooks=HookConfig(),
+    )
+    report = run_bot(config)
+
+    assert len(report.updates_applied) == 1
+    assert fake_provider.called is True
+    updated = _remote_show_file(remote, "depdetective/autoupdate", "pom.xml")
+    assert "<version>2.0.13</version>" in updated
+
+
+def test_run_bot_autodetects_rust_and_updates_cargo(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    remote, work = _init_bare_remote(tmp_path)
+    (work / "Cargo.toml").write_text(
+        """
+[package]
+name = "app"
+version = "0.1.0"
+
+[dependencies]
+serde = "1.0.200"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    _push_main(work, remote)
+
+    fake_provider = _FakeProvider()
+    monkeypatch.setattr("depdetective.runner.build_provider", lambda *args, **kwargs: fake_provider)
+    monkeypatch.setattr(
+        "depdetective.scanners.rust_cargo.latest_crates_version",
+        lambda _name: "1.0.204",
+    )
+
+    config = DepDetectiveConfig(
+        repo=RepoConfig(url=str(remote), base_branch="main"),
+        provider=ProviderConfig(type="github", repo="example/repo"),
+        scan=ScanConfig(ecosystems=[], auto_detect=True, include_vulnerabilities=False),
+        update=UpdateConfig(enabled=True, max_updates=10),
+        automation=AutomationConfig(branch_name="depdetective/autoupdate"),
+        hooks=HookConfig(),
+    )
+    report = run_bot(config)
+
+    assert len(report.updates_applied) == 1
+    assert fake_provider.called is True
+    updated = _remote_show_file(remote, "depdetective/autoupdate", "Cargo.toml")
+    assert 'serde = "1.0.204"' in updated

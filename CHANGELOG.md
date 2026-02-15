@@ -7,6 +7,15 @@
   - Updater support for literal NuGet versions in the same manifest types.
   - NuGet latest-version lookup and OSV vulnerability ecosystem mapping (`NuGet`).
 - Added integration coverage for end-to-end .NET update workflow and unit tests for .NET scanner/updater behavior.
+- Added first-class Go support:
+  - Scanner/updater support for `go.mod` `require` dependencies.
+  - Go module proxy latest-version lookup and OSV mapping (`Go`).
+- Added first-class Maven support:
+  - Scanner/updater support for literal `pom.xml` dependency versions.
+  - Maven Central latest-version lookup and OSV mapping (`Maven`).
+- Added first-class Rust support:
+  - Scanner/updater support for `Cargo.toml` dependency tables.
+  - crates.io latest-version lookup and OSV mapping (`crates.io`).
 
 ## 0.1.0 - 2026-02-14
 

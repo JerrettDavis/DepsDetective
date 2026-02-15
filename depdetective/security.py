@@ -7,6 +7,9 @@ ECOSYSTEM_MAP = {
     "python": "PyPI",
     "node": "npm",
     "dotnet": "NuGet",
+    "go": "Go",
+    "maven": "Maven",
+    "rust": "crates.io",
 }
 
 

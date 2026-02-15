@@ -17,7 +17,7 @@ provider:
   host: null                  # optional API host override
 
 scan:
-  ecosystems: []                # optional explicit list (e.g. [python, node, dotnet])
+  ecosystems: []                # optional explicit list (e.g. [python, node, dotnet, go, maven, rust])
   auto_detect: true             # auto-enable ecosystems with matching manifests
   include_vulnerabilities: true
 

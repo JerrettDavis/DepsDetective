@@ -11,7 +11,7 @@ DepDetective is a dependency automation bot similar to Dependabot, built for FOS
 ## Current capabilities
 
 - Clone repository from URL
-- Detect Python (`requirements.txt`, `pyproject.toml`), Node (`package.json`), and .NET/NuGet (`*.csproj`, `*.fsproj`, `*.vbproj`, `*.props`, `*.targets`, `Directory.Packages.props`, `packages.config`) dependencies
+- Detect Python (`requirements.txt`, `pyproject.toml`), Node (`package.json`), .NET/NuGet (`*.csproj`, `*.fsproj`, `*.vbproj`, `*.props`, `*.targets`, `Directory.Packages.props`, `packages.config`), Go (`go.mod`), Maven (`pom.xml`), and Rust (`Cargo.toml`) dependencies
 - Check latest versions using public registries (PyPI, npm)
 - Scan pinned dependency versions against OSV (no API key)
 - Apply dependency updates
@@ -177,4 +177,7 @@ This repository dogfoods DepDetective on itself via `.github/workflows/dogfood.y
 - Python updates currently target `requirements*.txt` pinned specs (`==`) and compatible `pyproject.toml` sections.
 - Node updates currently target `package.json` (`dependencies`, `devDependencies`).
 - .NET updates currently target literal NuGet versions in project/package manifests (`*.csproj`, `*.fsproj`, `*.vbproj`, `*.props`, `*.targets`, `Directory.Packages.props`, `packages.config`).
+- Go updates currently target literal versions in `go.mod` `require` statements.
+- Maven updates currently target literal `<version>` values in `pom.xml` dependencies.
+- Rust updates currently target version-bearing entries in `Cargo.toml` dependency tables.
 - Lockfile-aware workflows and grouped update strategies are planned next.

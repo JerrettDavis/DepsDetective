@@ -53,6 +53,64 @@ def latest_nuget_version(package: str, timeout: int = 20) -> str | None:
         return None
 
 
+def latest_go_version(module: str, timeout: int = 20) -> str | None:
+    url = f"https://proxy.golang.org/{quote(module, safe='/')}/@latest"
+    try:
+        response = requests.get(url, timeout=timeout)
+        if response.status_code != 200:
+            return None
+        payload = response.json()
+        version = payload.get("Version")
+        if isinstance(version, str):
+            return version
+        return None
+    except requests.RequestException:
+        LOGGER.warning("Failed to query Go module proxy for %s", module)
+        return None
+
+
+def latest_maven_version(group_id: str, artifact_id: str, timeout: int = 20) -> str | None:
+    try:
+        response = requests.get(
+            "https://search.maven.org/solrsearch/select",
+            params={
+                "q": f'g:"{group_id}" AND a:"{artifact_id}"',
+                "rows": 1,
+                "wt": "json",
+            },
+            timeout=timeout,
+        )
+        if response.status_code != 200:
+            return None
+        payload = response.json()
+        docs = payload.get("response", {}).get("docs", [])
+        if not docs:
+            return None
+        latest = docs[0].get("latestVersion")
+        if isinstance(latest, str):
+            return latest
+        return None
+    except requests.RequestException:
+        LOGGER.warning("Failed to query Maven Central for %s:%s", group_id, artifact_id)
+        return None
+
+
+def latest_crates_version(crate: str, timeout: int = 20) -> str | None:
+    url = f"https://crates.io/api/v1/crates/{quote(crate)}"
+    try:
+        response = requests.get(url, timeout=timeout)
+        if response.status_code != 200:
+            return None
+        payload = response.json()
+        newest = payload.get("crate", {}).get("newest_version")
+        if isinstance(newest, str):
+            return newest
+        return None
+    except requests.RequestException:
+        LOGGER.warning("Failed to query crates.io for %s", crate)
+        return None
+
+
 def osv_query(package: str, ecosystem: str, version: str, timeout: int = 20) -> list[dict]:
     payload = {
         "package": {"name": package, "ecosystem": ecosystem},
