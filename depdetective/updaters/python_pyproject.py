@@ -177,7 +177,7 @@ def _replace_semver(spec: str, latest: str) -> str | None:
 
 
 def _lookup_dependency_key(table: dict, name: str) -> str | None:
-    for key in table.keys():
+    for key in table:
         if str(key).lower() == name.lower():
             return str(key)
     return None

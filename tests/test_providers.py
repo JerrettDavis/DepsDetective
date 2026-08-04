@@ -44,7 +44,7 @@ def test_azure_provider_uses_basic_auth_header(monkeypatch) -> None:
     token = "abc123"
     monkeypatch.setenv("AZURE_DEVOPS_TOKEN", token)
     provider = AzureDevOpsProvider(repo="org/project/repo")
-    expected = base64.b64encode(f":{token}".encode("utf-8")).decode("utf-8")
+    expected = base64.b64encode(f":{token}".encode()).decode("utf-8")
     assert provider.headers["Authorization"] == f"Basic {expected}"
 
 

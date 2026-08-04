@@ -86,7 +86,7 @@ def _coerce_scan(data: dict) -> ScanConfig:
     if ecosystems is None:
         ecosystems = []
     if not isinstance(ecosystems, list):
-        raise ValueError("scan.ecosystems must be a list")
+        raise TypeError("scan.ecosystems must be a list")
     auto_detect = bool(data.get("auto_detect", True))
     if not auto_detect and not ecosystems:
         raise ValueError("scan.ecosystems cannot be empty when scan.auto_detect is false")
@@ -107,7 +107,7 @@ def _coerce_update(data: dict) -> UpdateConfig:
 def _coerce_automation(data: dict) -> AutomationConfig:
     labels = data.get("labels", ["dependencies"])
     if not isinstance(labels, list):
-        raise ValueError("automation.labels must be a list")
+        raise TypeError("automation.labels must be a list")
     return AutomationConfig(
         branch_name=str(data.get("branch_name", "depdetective/autoupdate")),
         pr_title=str(data.get("pr_title", "chore(deps): automated dependency updates")),
@@ -131,7 +131,7 @@ def _coerce_hook_list(value: object, key: str) -> list[str]:
     if value is None:
         return []
     if not isinstance(value, list):
-        raise ValueError(f"{key} must be a list of shell commands")
+        raise TypeError(f"{key} must be a list of shell commands")
     return [str(command) for command in value if str(command).strip()]
 
 
