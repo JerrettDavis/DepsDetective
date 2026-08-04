@@ -15,7 +15,7 @@ class GitRepo:
         self.root = root
 
     @staticmethod
-    def clone(repo_url: str, destination: Path, base_branch: str) -> "GitRepo":
+    def clone(repo_url: str, destination: Path, base_branch: str) -> GitRepo:
         _run(["git", "clone", "--depth", "1", "--branch", base_branch, repo_url, str(destination)])
         return GitRepo(destination)
 

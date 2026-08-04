@@ -131,7 +131,7 @@ def _parse_repo(repo: str) -> tuple[str, str, str]:
 def _build_auth_header(token: str, token_env: str) -> dict[str, str]:
     if token_env.upper().startswith("SYSTEM_"):
         return {"Authorization": f"Bearer {token}"}
-    basic = base64.b64encode(f":{token}".encode("utf-8")).decode("utf-8")
+    basic = base64.b64encode(f":{token}".encode()).decode("utf-8")
     return {"Authorization": f"Basic {basic}"}
 
 

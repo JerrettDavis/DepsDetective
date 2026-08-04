@@ -4,9 +4,9 @@ import json
 import logging
 import os
 import tempfile
+from pathlib import Path
 from urllib.parse import quote, urlsplit, urlunsplit
 from uuid import uuid4
-from pathlib import Path
 
 from depdetective.config import DepDetectiveConfig
 from depdetective.gitops import GitRepo

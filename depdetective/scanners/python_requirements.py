@@ -31,7 +31,7 @@ class PythonRequirementsScanner(BaseScanner):
         records: list[DependencyRecord] = []
         for line in file_path.read_text(encoding="utf-8").splitlines():
             stripped = line.strip()
-            if not stripped or stripped.startswith("#") or stripped.startswith("-"):
+            if not stripped or stripped.startswith(("#", "-")):
                 continue
             match = REQ_LINE.match(stripped)
             if not match:
